@@ -9,6 +9,14 @@ const totalCount = document.getElementById("total-count");
 const completedCount = document.getElementById("completed-count");
 const remainingCount = document.getElementById("remaining-count");
 
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalMessage = document.getElementById("modal-message");
+const modalCancel = document.getElementById("modal-cancel");
+const modalConfirm = document.getElementById("modal-confirm");
+
+let modalAction = null;
+
 let selectedId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -119,20 +127,29 @@ function toggleComplete(id) {
 }
 
 function deleteTodo(id) {
-    let todos = getTodos();
-    todos = todos.filter(todo => todo.id !== id);
-
-    localStorage.setItem("todos", JSON.stringify(todos));
-    todoDisplay.innerHTML = "<p>Select a todo from sidebar</p>";
-    loadTodos();
+    openModal(
+        "Delete Todo",
+        "Are you sure you want to delete this todo?",
+        () => {
+            let todos = getTodos();
+            todos = todos.filter(todo => todo.id !== id);
+            localStorage.setItem("todos", JSON.stringify(todos));
+            todoDisplay.innerHTML = "<p>Select a todo from sidebar</p>";
+            loadTodos();
+        }
+    );
 }
 
 function deleteAllTodos() {
-    if (!confirm("Are you sure you want to delete all todos?")) return;
-
-    localStorage.removeItem("todos");
-    todoDisplay.innerHTML = "<p>Select a todo from sidebar</p>";
-    loadTodos();
+    openModal(
+        "Delete All Todos",
+        "This will permanently remove all todos.",
+        () => {
+            localStorage.removeItem("todos");
+            todoDisplay.innerHTML = "<p>Select a todo from sidebar</p>";
+            loadTodos();
+        }
+    );
 }
 
 function editTodo(id) {
@@ -182,3 +199,23 @@ function loadTheme() {
         document.body.classList.add("dark");
     }
 }
+
+function openModal(title, message, action) {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modal.classList.remove("hidden");
+
+    modalAction = action;
+}
+
+function closeModal() {
+    modal.classList.add("hidden");
+    modalAction = null;
+}
+
+modalCancel.addEventListener("click", closeModal);
+
+modalConfirm.addEventListener("click", () => {
+    if (modalAction) modalAction();
+    closeModal();
+});
