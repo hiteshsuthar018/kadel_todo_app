@@ -1,23 +1,25 @@
-const input = document.querySelector("#todo-input");
-const addBtn = document.querySelector("#add-btn");
-const sidebarList = document.querySelector("#sidebar-list");
-const todoDisplay = document.querySelector("#todo-display");
-const darkToggle = document.querySelector("#dark-toggle");
+const input = document.getElementById("todo-input");
+const addBtn = document.getElementById("add-btn");
+const sidebarList = document.getElementById("sidebar-list");
+const todoDisplay = document.getElementById("todo-display");
+const darkToggle = document.getElementById("dark-toggle");
+const deleteAllBtn = document.getElementById("delete-all");
+
+const totalCount = document.getElementById("total-count");
+const completedCount = document.getElementById("completed-count");
+const remainingCount = document.getElementById("remaining-count");
 
 let selectedId = null;
 
-//inital function to run
 document.addEventListener("DOMContentLoaded", () => {
     loadTodos();
     loadTheme();
 });
 
-//event listeners
 addBtn.addEventListener("click", addTodo);
 darkToggle.addEventListener("click", toggleDarkMode);
+deleteAllBtn.addEventListener("click", deleteAllTodos);
 
-
-//add todo 
 function addTodo() {
     const text = input.value.trim();
     if (!text) return;
@@ -36,12 +38,11 @@ function addTodo() {
     input.value = "";
     loadTodos();
 }
-//get all todos 
+
 function getTodos() {
     return JSON.parse(localStorage.getItem("todos")) || [];
 }
 
-//load todos 
 function loadTodos() {
     sidebarList.innerHTML = "";
     const todos = getTodos();
@@ -58,9 +59,21 @@ function loadTodos() {
         li.addEventListener("click", () => showTodo(todo.id));
         sidebarList.appendChild(li);
     });
+
+    updateStats();
 }
 
-//show todo
+function updateStats() {
+    const todos = getTodos();
+    const total = todos.length;
+    const completed = todos.filter(t => t.completed).length;
+    const remaining = total - completed;
+
+    totalCount.textContent = total;
+    completedCount.textContent = completed;
+    remainingCount.textContent = remaining;
+}
+
 function showTodo(id) {
     selectedId = id;
     const todos = getTodos();
@@ -90,7 +103,6 @@ function showTodo(id) {
         .addEventListener("click", () => editTodo(id));
 }
 
-//toggle complete flag
 function toggleComplete(id) {
     let todos = getTodos();
 
@@ -106,7 +118,6 @@ function toggleComplete(id) {
     showTodo(id);
 }
 
-//delete todo 
 function deleteTodo(id) {
     let todos = getTodos();
     todos = todos.filter(todo => todo.id !== id);
@@ -116,7 +127,14 @@ function deleteTodo(id) {
     loadTodos();
 }
 
-//edit todo
+function deleteAllTodos() {
+    if (!confirm("Are you sure you want to delete all todos?")) return;
+
+    localStorage.removeItem("todos");
+    todoDisplay.innerHTML = "<p>Select a todo from sidebar</p>";
+    loadTodos();
+}
+
 function editTodo(id) {
     const todos = getTodos();
     const todo = todos.find(t => t.id === id);
@@ -133,7 +151,6 @@ function editTodo(id) {
         .addEventListener("click", () => saveEdit(id));
 }
 
-//save edit
 function saveEdit(id) {
     const newText = document.querySelector(".edit-input").value.trim();
     if (!newText) return;
@@ -152,7 +169,6 @@ function saveEdit(id) {
     showTodo(id);
 }
 
-//toggle dark mode
 function toggleDarkMode() {
     document.body.classList.toggle("dark");
     localStorage.setItem("theme",
@@ -160,7 +176,6 @@ function toggleDarkMode() {
     );
 }
 
-//loading theme to browser
 function loadTheme() {
     const theme = localStorage.getItem("theme");
     if (theme === "dark") {

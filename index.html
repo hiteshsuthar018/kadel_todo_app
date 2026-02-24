@@ -11,12 +11,37 @@
 <div class="app">
 
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Todos</h2>
-            <button id="dark-toggle">🌙</button>
+
+    <div class="sidebar-header">
+        <h2>My Todos</h2>
+        <button id="dark-toggle">🌙</button>
+    </div>
+
+    <!-- Modern Stats Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <span>Total</span>
+            <h3 id="total-count">0</h3>
         </div>
-        <ul id="sidebar-list"></ul>
-    </aside>
+
+        <div class="stat-card completed">
+            <span>Completed</span>
+            <h3 id="completed-count">0</h3>
+        </div>
+
+        <div class="stat-card remaining">
+            <span>Remaining</span>
+            <h3 id="remaining-count">0</h3>
+        </div>
+    </div>
+
+    <button id="delete-all" class="delete-all-btn">
+        Delete All
+    </button>
+
+    <ul id="sidebar-list"></ul>
+
+</aside>
 
     <main class="main">
         <div class="input-section">
@@ -28,6 +53,7 @@
             <p>Select a todo from sidebar</p>
         </div>
     </main>
+
 
 </div>
 
